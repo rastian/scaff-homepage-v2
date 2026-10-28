@@ -1,0 +1,208 @@
+@import "tailwindcss";
+
+/* ── Design tokens ─────────────────────────────────────────────
+   Dark (default) is a warm near-black with cream type, after intentapp.dev.
+   Accents, all contrast-checked (WCAG AA) on every surface in both themes:
+   - blue   Scaff blue. `accent` is blue for text/links/selection,
+            `blue` is the fill (white text on it is 5.3:1).
+   - pink   the person ("You" cursor, comment pins). Fill only, ink text on
+            it; `pink-ink` when pink must be text.
+   - yellow sticky notes, "waiting for you". Fill only, ink text on it.
+   - mint   success / done.
+   No orange anywhere. */
+:root,
+:root[data-theme="dark"] {
+  --ink: #161615;
+  --ink-2: #1b1b1a;
+  --surface: #1f1f1d;
+  --surface-2: #282826;
+  --line: rgb(255 255 255 / 0.08);
+  --line-strong: rgb(255 255 255 / 0.15);
+  --fg: #f1eee6;
+  --fg-muted: #a9a59c;
+  --fg-subtle: #938e85;
+  --on-accent: #161615;
+  --cream: #fbfaf7;
+  --sky: #d6effd;
+  --blue: #0a6cc2;
+  --accent: #6cbbf7;
+  --pink: #ff8fc8;
+  --pink-ink: #ff8fc8;
+  --yellow: #f5d547;
+  --mint: #4fd1a5;
+  --grid-dot: rgb(255 255 255 / 0.07);
+  --shadow-window: 0 1px 0 rgb(255 255 255 / 0.06) inset, 0 40px 80px -32px rgb(0 0 0 / 0.7);
+  /* Shapes that carry a fill (pins, sticky notes) get this hairline so they
+     still read on light surfaces (non-text contrast). */
+  --fill-edge: rgb(0 0 0 / 0);
+  /* Claude Startups badge, in Claude's own palette (clay spark is constant):
+     dark = Claude's warm dark surface with ivory type. */
+  --claude-bg: #262624;
+  --claude-fg: #faf9f5;
+  --claude-chip: rgb(217 119 87 / 0.2);
+
+  /* Motion system */
+  --dur-fast: 150ms;
+  --dur-med: 250ms;
+  --dur-slow: 400ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --ink: #f7f4ef;
+  --ink-2: #f1ede6;
+  --surface: #ffffff;
+  --surface-2: #f4f1eb;
+  --line: rgb(20 18 14 / 0.08);
+  --line-strong: rgb(20 18 14 / 0.16);
+  --fg: #14130f;
+  --fg-muted: #5b5750;
+  --fg-subtle: #696560;
+  --accent: #0962b0;
+  --pink: #e04f98; /* deeper on light: 3.3:1 as a shape, ink text on it 5.1:1 */
+  --pink-ink: #b8256a;
+  --mint: #146c4b;
+  --grid-dot: rgb(20 18 14 / 0.11);
+  --shadow-window: 0 1px 0 rgb(255 255 255 / 0.8) inset, 0 40px 80px -32px rgb(40 30 20 / 0.28), 0 12px 24px -12px rgb(40 30 20 / 0.12);
+  --fill-edge: rgb(20 18 14 / 0.22);
+  --claude-bg: #faf9f5;
+  --claude-fg: #141413;
+  --claude-chip: rgb(217 119 87 / 0.14);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-on-accent: var(--on-accent);
+  --color-cream: var(--cream);
+  --color-sky: var(--sky);
+  --color-blue: var(--blue);
+  --color-accent: var(--accent);
+  --color-pink: var(--pink);
+  --color-pink-ink: var(--pink-ink);
+  --color-yellow: var(--yellow);
+  --color-mint: var(--mint);
+  --color-fill-edge: var(--fill-edge);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-newsreader);
+  --ease-out: var(--ease-out);
+  --shadow-window: var(--shadow-window);
+}
+
+html {
+  background: var(--ink);
+  /* Keep keyboard-focused elements clear of the fixed header and the
+     bottom-fixed pill / pause button (WCAG 2.4.11). */
+  scroll-padding-top: 88px;
+  scroll-padding-bottom: 88px;
+}
+
+body {
+  background: var(--ink);
+  color: var(--fg);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--blue) 45%, transparent);
+  color: var(--fg);
+}
+
+/* Visible, consistent focus ring (WCAG 2.4.7). In the base layer so
+   per-element focus-visible:outline-offset-* utilities can override it;
+   outlines follow each element's own border-radius. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Shared utilities */
+@utility dot-grid {
+  background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+@utility glass {
+  background: color-mix(in srgb, var(--ink) 72%, transparent);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 55%, transparent); }
+  70% { box-shadow: 0 0 0 8px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* Hero entrance, in CSS so it starts at first paint rather than at
+   hydration. Words rise inside overflow-hidden spans (WordReveal); the rest
+   fades up. Set animation-delay inline. */
+@keyframes word-rise {
+  from { transform: translateY(105%); }
+  to { transform: none; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s var(--ease-out) both;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 1.8s var(--ease-out) infinite;
+}
+
+/* Global pause button (DemoPlayback) also freezes CSS loops */
+:root[data-paused] .animate-pulse-ring,
+:root[data-paused] .animate-spin,
+:root[data-paused] .animate-pulse,
+:root[data-paused] .animate-ping,
+:root[data-paused] .animate-bounce {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
