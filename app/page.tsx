@@ -1,6 +1,5 @@
 import { MotionConfig } from "motion/react";
 import { DemoPlaybackProvider, PlaybackToggle } from "@/components/motion/DemoPlayback";
-import { Nav } from "@/components/sections/Nav";
 import { Hero } from "@/components/sections/Hero";
 import { HowItWorks } from "@/components/sections/HowItWorks";
 import { Canvas } from "@/components/sections/Canvas";
@@ -19,7 +18,6 @@ export default function Home() {
     // respects the OS setting, not only components that check it themselves.
     <MotionConfig reducedMotion="user">
       <DemoPlaybackProvider>
-        <Nav />
         <main id="main">
           <Hero />
           <HowItWorks />
