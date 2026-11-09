@@ -44,5 +44,4 @@ public/media/         product screenshots (studio-tour-poster.jpg is also the OG
 - Switch to `LazyMotion` + `m` components to cut the motion bundle.
 - Preload the Newsreader italic face used in headline accents.
 - Replace the OG image (currently the studio tour poster) with a purpose-made one.
-- Swap the Claude badge spark for the official Claude mark asset.
 - Get legal sign-off on the shortened privacy line under the download buttons.

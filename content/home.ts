@@ -4,15 +4,17 @@
 // Section headings are two explicit lines: [first line, second line].
 type TwoLines = readonly [string, string];
 
+// Links with only an `id` are homepage sections (anchors, prefixed with "/"
+// off the homepage); links with an `href` are their own pages.
 export const nav = {
   links: [
     { id: "workflow", label: "Workflow" },
-    { id: "canvas", label: "Canvas" },
     { id: "features", label: "Features" },
     { id: "models", label: "Models" },
-    { id: "discover", label: "Discover" },
     { id: "faq", label: "FAQ" },
-  ],
+    { id: "pricing", label: "Pricing", href: "/pricing" },
+    { id: "docs", label: "Docs", href: "/docs" },
+  ] as readonly { id: string; label: string; href?: string }[],
   signIn: "Sign in",
   signInHref: "https://scaff.design",
   stickyCta: "Download Scaff — free",
@@ -235,8 +237,9 @@ export const finalCta = {
 
 export const footer = {
   columns: [
-    { title: "Product", links: [{ label: "Workflow", href: "#workflow" }, { label: "Canvas", href: "#canvas" }, { label: "Features", href: "#features" }, { label: "Changelog", href: "https://scaff.design/changelog" }] },
-    { title: "Community", links: [{ label: "GitHub", href: "https://github.com/scaff-design/scaff" }, { label: "Discord", href: "https://discord.gg/byk95jjhwk" }, { label: "X", href: "https://x.com/scaffdesign_" }] },
+    { title: "Product", links: [{ label: "Overview", href: "/product" }, { label: "Pricing", href: "/pricing" }, { label: "Compare", href: "/compare" }, { label: "Changelog", href: "https://scaff.design/changelog" }] },
+    { title: "Resources", links: [{ label: "Docs", href: "/docs" }, { label: "Use cases", href: "/use-cases" }, { label: "For teams", href: "/teams" }, { label: "Security", href: "/security" }] },
+    { title: "Community", links: [{ label: "Community", href: "/community" }, { label: "Discover", href: "/discover" }, { label: "GitHub", href: "https://github.com/scaff-design/scaff" }, { label: "Discord", href: "https://discord.gg/byk95jjhwk" }, { label: "X", href: "https://x.com/scaffdesign_" }] },
     { title: "Legal", links: [{ label: "Privacy", href: "https://scaff.design/privacy" }] },
   ],
   copyright: "© 2026 Scaff",

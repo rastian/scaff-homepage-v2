@@ -95,7 +95,7 @@ export function DownloadButton({
         onClick={onClick}
         // Fixed name, so swapping in the aria-hidden "Downloading…" state never empties it.
         aria-label={label}
-        className={`group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full bg-fg font-medium text-ink shadow-[0_8px_24px_-8px_rgb(0_0_0/0.5)] transition-[transform,box-shadow,background-color] duration-[var(--dur-fast)] ease-out hover:-translate-y-px hover:shadow-[0_14px_32px_-10px_rgb(0_0_0/0.55)] active:translate-y-0 active:scale-[0.98] ${
+        className={`group relative inline-flex items-center justify-center gap-2.5 overflow-hidden whitespace-nowrap rounded-full bg-fg font-medium text-ink shadow-[0_8px_24px_-8px_rgb(0_0_0/0.5)] transition-[transform,box-shadow,background-color] duration-[var(--dur-fast)] ease-out hover:-translate-y-px hover:shadow-[0_14px_32px_-10px_rgb(0_0_0/0.55)] active:translate-y-0 active:scale-[0.98] ${
           big ? "h-13 min-w-[15rem] px-7 text-[15px]" : "h-11 min-w-[10.5rem] px-4 text-sm"
         }`}
       >

@@ -127,7 +127,13 @@ body {
 @layer base {
   :focus-visible {
     outline: 2px solid var(--accent);
-    outline-offset: 3px;
+    outline-offset: 2px;
+  }
+  /* Controls inside overflow-hidden cards (Compare, Models, Features demos)
+     lose an outside outline to the clip. Inside them, draw the ring as an
+     inset shadow so it stays visible. */
+  .overflow-hidden :focus-visible {
+    outline-offset: -4px;
   }
 }
 

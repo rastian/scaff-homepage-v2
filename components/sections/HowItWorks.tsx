@@ -16,7 +16,7 @@ import { useReducedMotionSafe } from "@/components/motion/useReducedMotionSafe";
 type Step = (typeof workflow.steps)[number];
 const STEPS = workflow.steps;
 const COUNT = STEPS.length;
-const IMG_SIZES = "(min-width: 1280px) 760px, (min-width: 768px) 58vw, 100vw";
+const IMG_SIZES = "(min-width: 1280px) 760px, (min-width: 1024px) 58vw, 100vw";
 // Scroll distance budget per step of the pinned track (container height = COUNT x this).
 const STEP_VH = 65;
 // In light theme the dark app screenshots sit in a dark inset so they read as embedded UI.
@@ -25,7 +25,7 @@ const SHOT_INNER = "[[data-theme=light]_&]:rounded-xl";
 
 export function HowItWorks() {
   return (
-    <section id="workflow" aria-labelledby="workflow-title" className="relative px-4 pb-16 pt-24 sm:px-6 sm:pt-32 md:pb-0">
+    <section id="workflow" aria-labelledby="workflow-title" className="relative px-4 pb-16 pt-24 sm:px-6 sm:pt-32 lg:pb-0">
       <div className="mx-auto max-w-7xl">
         <SectionHeading id="workflow-title" eyebrow={workflow.eyebrow} title={workflow.title[0]} muted={workflow.title[1]} />
         <PinnedStory />
@@ -92,8 +92,11 @@ function PinnedStory() {
   const step = STEPS[active];
 
   return (
-    <div ref={trackRef} className="relative mt-16 hidden md:block" style={{ height: `${COUNT * STEP_VH}vh` }}>
-      <div className="sticky top-24 grid h-[calc(100svh-8rem)] max-h-[760px] min-h-[460px] grid-cols-[2fr_3fr] items-center gap-10 lg:gap-16">
+    // From lg only: below that the 2fr/3fr split shrinks the shot to a thumbnail,
+    // so tablets get the stacked story with full-width screenshots instead.
+    // items-start: the window's top lines up with the first step.
+    <div ref={trackRef} className="relative mt-16 hidden lg:block" style={{ height: `${COUNT * STEP_VH}vh` }}>
+      <div className="sticky top-28 grid h-[calc(100svh-9rem)] max-h-[760px] min-h-[460px] grid-cols-[2fr_3fr] items-start gap-16">
         {/* Steps + progress rail */}
         <div className="relative">
           <div aria-hidden className="absolute bottom-5 left-[11px] top-5 w-px overflow-hidden bg-line">
@@ -126,7 +129,7 @@ function PinnedStory() {
                       aria-current={isActive ? "step" : undefined}
                       aria-describedby={isActive ? `workflow-body-${s.n}` : undefined}
                       className={`group -ml-3 flex min-h-11 w-[calc(100%+0.75rem)] items-baseline gap-3 rounded-xl px-3 py-3 text-left transition-[color,background-color,transform] duration-[var(--dur-fast)] hover:bg-surface-2/60 active:scale-[0.99] ${
-                        isActive ? "text-fg" : "text-fg-subtle hover:text-fg-muted"
+                        isActive ? "text-fg" : "text-fg-muted hover:text-fg"
                       }`}
                     >
                       <span className="font-mono text-[11px] tracking-[0.08em] tabular-nums">{s.n}</span>
@@ -224,7 +227,7 @@ function PinnedStory() {
 
 function StackedStory() {
   return (
-    <ol className="mt-12 space-y-16 md:hidden">
+    <ol className="mt-12 space-y-16 md:mt-16 md:space-y-24 lg:hidden">
       {STEPS.map((s, i) => (
         <li key={s.n}>
           <Reveal>
@@ -232,7 +235,7 @@ function StackedStory() {
             <h3 className="mt-2 text-balance font-serif text-[28px] font-normal leading-[1.1] tracking-[-0.015em] text-fg">
               {s.title}
             </h3>
-            <p className="mt-3 text-pretty text-[15px] leading-relaxed text-fg-muted">{s.body}</p>
+            <p className="mt-3 max-w-2xl text-pretty text-[15px] leading-relaxed text-fg-muted md:text-[16px]">{s.body}</p>
           </Reveal>
           <Reveal delay={0.08} className="mt-6">
             <StepWindow step={s} index={i} />
@@ -269,7 +272,9 @@ function StepWindow({ step, index }: { step: Step; index: number }) {
 /* Coded overlays: one per step, sized in em off the container width   */
 /* ------------------------------------------------------------------ */
 
-const overlayScale = { fontSize: "clamp(8px, 1.45cqw, 13px)" } as const;
+// Smallest overlay text is 0.9em, so at the tablet's full-width shot
+// (~850px) labels land at ~12px and never drop below ~10px on desktop.
+const overlayScale = { fontSize: "clamp(9px, 1.6cqw, 14px)" } as const;
 
 function Overlay({ index, final, pulse }: { index: number; final: boolean; pulse: boolean }) {
   // NotePin always springs in from scale 0; "always" makes transforms instant so the
@@ -310,7 +315,7 @@ function TokenCard({ final }: { final: boolean }) {
           <path d="M9.25 1.75v3.25h3.25" strokeLinejoin="round" />
         </svg>
         DESIGN.md
-        <span className="ml-auto rounded-full bg-mint/15 px-[0.6em] py-[0.15em] text-[0.85em] text-fg">synced</span>
+        <span className="ml-auto rounded-full bg-mint/15 px-[0.6em] py-[0.15em] text-[0.9em] text-fg">synced</span>
       </div>
       <div className="mt-[0.9em] flex gap-[0.5em]">
         {swatches.map((s, i) => (
@@ -326,7 +331,7 @@ function TokenCard({ final }: { final: boolean }) {
             }}
           >
             <div className={`h-[2.4em] rounded-[0.6em] ring-1 ring-inset ring-fill-edge ${s.cls}`} />
-            <p className="mt-[0.35em] font-mono text-[0.8em] text-fg-subtle">{s.name}</p>
+            <p className="mt-[0.35em] font-mono text-[0.9em] text-fg-subtle">{s.name}</p>
           </motion.div>
         ))}
       </div>
@@ -339,13 +344,15 @@ function TokenCard({ final }: { final: boolean }) {
 }
 
 // 02: a pink hand-drawn circle around a detail + the note that goes with it.
+// Both sit on the prototype (the browser pane, right of ~55%), never on the
+// chat: the circle rings the order-summary rows, the pin sits just above it.
 function CircleNote({ final }: { final: boolean }) {
   return (
     <>
       <svg
         viewBox="0 0 200 100"
         preserveAspectRatio="none"
-        className="absolute left-[34%] top-[26%] h-[24%] w-[32%] overflow-visible text-pink"
+        className="absolute left-[54.5%] top-[28%] h-[21%] w-[42%] overflow-visible text-pink"
         fill="none"
       >
         <motion.path
@@ -363,7 +370,7 @@ function CircleNote({ final }: { final: boolean }) {
         />
       </svg>
       <motion.div
-        className="absolute left-[63%] top-[16%]"
+        className="absolute left-[60%] top-[10%]"
         initial={final ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: dur.fast, delay: 0.85 }}
@@ -407,7 +414,7 @@ function ReviewPins({ final }: { final: boolean }) {
               </svg>
             </span>
             Fix with agent
-            <span className="font-mono text-[0.85em] text-fg-subtle">2 notes</span>
+            <span className="font-mono text-[0.9em] text-fg-subtle">2 notes</span>
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -464,7 +471,7 @@ function PrCard({ final, pulse }: { final: boolean; pulse: boolean }) {
             }}
           >
             <MiniThumb after={i === 1} />
-            <p className="mt-[0.35em] font-mono text-[0.8em] text-fg-subtle">{label}</p>
+            <p className="mt-[0.35em] font-mono text-[0.9em] text-fg-subtle">{label}</p>
           </motion.div>
         ))}
       </div>
