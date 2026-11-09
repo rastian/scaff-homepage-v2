@@ -1,10 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { nav } from "@/content/home";
 import { DownloadButton, downloadHrefFor, usePlatform } from "@/components/ui/DownloadButton";
 import { LogoMark } from "@/components/ui/Logo";
+import { NavIcon } from "@/components/ui/NavIcon";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { dur, ease, spring } from "@/components/motion/tokens";
 import { useReducedMotionSafe } from "@/components/motion/useReducedMotionSafe";
@@ -94,8 +96,15 @@ function MenuIcon({ open }: { open: boolean }) {
 
 export function Nav() {
   const reduced = useReducedMotionSafe();
-  const ids = nav.links.map((l) => l.id);
-  const active = useActiveSection(ids);
+  const pathname = usePathname();
+  const home = pathname === "/";
+  // Section anchors only track scroll on the homepage; elsewhere they link back to it.
+  const ids = home ? nav.links.filter((l) => !l.href).map((l) => l.id) : [];
+  const section = useActiveSection(ids);
+  const hrefFor = (l: (typeof nav.links)[number]) => l.href ?? (home ? `#${l.id}` : `/#${l.id}`);
+  const isActive = (l: (typeof nav.links)[number]) =>
+    l.href ? pathname === l.href || pathname.startsWith(`${l.href}/`) : section === l.id;
+  const currentFor = (l: (typeof nav.links)[number]) => (isActive(l) ? (l.href ? "page" : "location") : undefined);
   const showSticky = useStickyCta();
   const downloadHref = downloadHrefFor(usePlatform());
 
@@ -197,9 +206,9 @@ export function Nav() {
         >
           <div className="flex items-center">
             <a
-              href="#top"
-              aria-label="Scaff, back to top"
-              className="-ml-1.5 flex h-11 items-center rounded-full px-1.5 transition-opacity duration-[var(--dur-fast)] hover:opacity-80 active:opacity-60"
+              href={home ? "#top" : "/"}
+              aria-label={home ? "Scaff, back to top" : "Scaff home"}
+              className="-ml-1.5 flex h-11 items-center rounded-full px-1.5 transition-opacity duration-[var(--dur-fast)] hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:opacity-60"
             >
               <LogoMark className="size-8" />
             </a>
@@ -207,17 +216,17 @@ export function Nav() {
 
           <ul className="hidden items-center md:flex">
             {nav.links.map((l) => {
-              const isActive = active === l.id;
+              const on = isActive(l);
               return (
                 <li key={l.id}>
                   <a
-                    href={`#${l.id}`}
-                    aria-current={isActive ? "location" : undefined}
+                    href={hrefFor(l)}
+                    aria-current={currentFor(l)}
                     className={`group relative flex h-11 items-center px-3 text-[13.5px] font-medium transition-colors duration-[var(--dur-fast)] lg:px-3.5 ${
-                      isActive ? "text-fg" : "text-fg-muted hover:text-fg"
+                      on ? "text-fg" : "text-fg-muted hover:text-fg"
                     }`}
                   >
-                    {isActive ? (
+                    {on ? (
                       <motion.span
                         layoutId="nav-active-pill"
                         aria-hidden
@@ -230,7 +239,15 @@ export function Nav() {
                         className="absolute inset-x-0.5 inset-y-[7px] rounded-full bg-fg/[0.04] opacity-0 transition-opacity duration-[var(--dur-fast)] group-hover:opacity-100 group-active:bg-fg/[0.08]"
                       />
                     )}
-                    <span className="relative">{l.label}</span>
+                    <span className="relative flex items-center gap-1.5">
+                      <NavIcon
+                        id={l.id}
+                        // Hidden from lg to xl, where Sign in and the download pill join the
+                        // right column and the centred links would push them onto two lines.
+                        className={`size-4 shrink-0 transition-opacity duration-[var(--dur-fast)] lg:hidden xl:block ${on ? "opacity-100" : "opacity-70 group-hover:opacity-100"}`}
+                      />
+                      {l.label}
+                    </span>
                   </a>
                 </li>
               );
@@ -241,7 +258,7 @@ export function Nav() {
             <ThemeToggle />
             <a
               href={nav.signInHref}
-              className="hidden h-11 items-center rounded-full px-3.5 text-[13.5px] font-medium text-fg-muted transition-colors duration-[var(--dur-fast)] hover:bg-fg/5 hover:text-fg active:bg-fg/10 lg:inline-flex"
+              className="hidden h-11 items-center whitespace-nowrap rounded-full px-3.5 text-[13.5px] font-medium text-fg-muted transition-colors duration-[var(--dur-fast)] hover:bg-fg/5 hover:text-fg active:bg-fg/10 lg:inline-flex"
             >
               {nav.signIn}
             </a>
@@ -288,13 +305,16 @@ export function Nav() {
                     transition={{ duration: dur.slow, ease: ease.out, delay: 0.03 * i }}
                   >
                     <a
-                      href={`#${l.id}`}
+                      href={hrefFor(l)}
                       onClick={() => closeMenu(false)}
-                      aria-current={active === l.id ? "location" : undefined}
+                      aria-current={currentFor(l)}
                       className="flex h-14 items-center justify-between border-b border-line font-serif text-[28px] font-normal tracking-[-0.02em] text-fg transition-colors duration-[var(--dur-fast)] hover:text-fg-muted active:text-fg-subtle"
                     >
-                      {l.label}
-                      {active === l.id ? <span aria-hidden className="size-2 rounded-full bg-accent" /> : null}
+                      <span className="flex items-center gap-3.5">
+                        <NavIcon id={l.id} className="size-5 shrink-0 text-fg-subtle" />
+                        {l.label}
+                      </span>
+                      {isActive(l) ? <span aria-hidden className="size-2 rounded-full bg-accent" /> : null}
                     </a>
                   </motion.li>
                 ))}

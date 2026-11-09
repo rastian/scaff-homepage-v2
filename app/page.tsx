@@ -3,7 +3,6 @@ import { DemoPlaybackProvider, PlaybackToggle } from "@/components/motion/DemoPl
 import { Nav } from "@/components/sections/Nav";
 import { Hero } from "@/components/sections/Hero";
 import { HowItWorks } from "@/components/sections/HowItWorks";
-import { Canvas } from "@/components/sections/Canvas";
 import { Features } from "@/components/sections/Features";
 import { Models } from "@/components/sections/Models";
 import { Compare } from "@/components/sections/Compare";
@@ -23,7 +22,6 @@ export default function Home() {
         <main id="main">
           <Hero />
           <HowItWorks />
-          <Canvas />
           <Features />
           <Models />
           <Compare />

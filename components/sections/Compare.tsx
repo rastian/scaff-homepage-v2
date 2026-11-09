@@ -11,11 +11,13 @@ type Row = (typeof compare.rows)[number];
 
 const GRID = "grid grid-cols-[minmax(0,1fr)_4.5rem_5.5rem] sm:grid-cols-[minmax(0,1fr)_8rem_9rem]";
 
-export function Compare() {
+// `heading={false}` drops the section heading when a page hero already says it
+// (/compare); `defaultOpen` starts with every row shown.
+export function Compare({ heading = true, defaultOpen = false }: { heading?: boolean; defaultOpen?: boolean } = {}) {
   const reduced = useReducedMotionSafe();
   const cardRef = useRef<HTMLDivElement>(null);
   const inView = useInView(cardRef, { once: true, margin: "0px 0px -15% 0px" });
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const extraId = useId();
 
   const first = compare.rows.slice(0, compare.collapsedCount);
@@ -23,20 +25,27 @@ export function Compare() {
   const shown = reduced || inView;
 
   return (
-    <section id="compare" aria-labelledby="compare-title" className="relative px-4 py-24 sm:px-6 sm:py-32">
+    <section
+      id="compare"
+      aria-labelledby={heading ? "compare-title" : undefined}
+      aria-label={heading ? undefined : compare.tableLabel}
+      className={`relative px-4 sm:px-6 ${heading ? "py-24 sm:py-32" : "pb-12 sm:pb-16"}`}
+    >
       <div className="mx-auto max-w-6xl">
-        <SectionHeading
-          id="compare-title"
-          align="center"
-          eyebrow={compare.eyebrow}
-          title={compare.title[0]}
-          muted={compare.title[1]}
-          body={compare.body}
-        />
+        {heading ? (
+          <SectionHeading
+            id="compare-title"
+            align="center"
+            eyebrow={compare.eyebrow}
+            title={compare.title[0]}
+            muted={compare.title[1]}
+            body={compare.body}
+          />
+        ) : null}
 
         <div
           ref={cardRef}
-          className="mx-auto mt-14 max-w-3xl overflow-hidden rounded-3xl border border-line-strong bg-surface shadow-window"
+          className={`mx-auto max-w-3xl ${heading ? "mt-14" : ""} overflow-hidden rounded-3xl border border-line-strong bg-surface shadow-window`}
         >
           <div role="table" aria-label={compare.tableLabel} aria-rowcount={compare.rows.length + 1}>
             <div role="rowgroup">
@@ -90,7 +99,7 @@ export function Compare() {
             aria-expanded={open}
             aria-controls={extraId}
             onClick={() => setOpen((o) => !o)}
-            className="group/more flex min-h-13 w-full items-center justify-center gap-2 border-t border-line text-[14px] font-medium text-fg-muted transition-colors duration-[var(--dur-fast)] hover:bg-surface-2 hover:text-fg active:bg-ink-2 focus-visible:-outline-offset-2"
+            className="group/more flex min-h-13 w-full items-center justify-center gap-2 border-t border-line text-[14px] font-medium text-fg-muted transition-colors duration-[var(--dur-fast)] hover:bg-surface-2 hover:text-fg active:bg-ink-2"
           >
             {open ? compare.showLess : compare.showAll(compare.rows.length)}
             <svg
